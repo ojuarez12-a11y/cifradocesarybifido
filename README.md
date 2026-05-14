@@ -90,8 +90,10 @@ Cifrado polibiano que combina sustitución y transposición usando un cuadro 5×
 
 ## 👤 Autor
 
+Universidad Autonoma de Baja California Sur
+Departamento Academico de Sistemas Computacionales
 II Semestre - Ingeniería en Desarrollo de Software
 
-Proyecto académico — Materia: Ética Profesional y Derecho Informático
+Proyecto académico — Materia: Ética Profesional y Derecho Informático  
 Alumnos:    Oswaldo Juarez Jimenez
             Sergio Angel Rochin Rodriguez
