@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ética Profesional y Derecho Informático — Cifrado César & Bífido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* 
+   VARIABLES Y TEMA
+ */
+:root {
+  --bg:      #080b12;
+  --panel:   #0d1220;
+  --card:    #111827;
+  --card2:   #141c2e;
+  --border:  #1e2d45;
+  --border2: #243354;
+  --a1:      #60a5fa;
+  --a2:      #34d399;
+  --a3:      #fbbf24;
+  --a4:      #f472b6;
+  --txt:     #e2e8f0;
+  --muted:   #64748b;
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'Syne', sans-serif;
+  --radius:  12px;
+  --shadow:  0 4px 24px rgba(0,0,0,.45);
+}
+body.light {
+  --bg:#f1f5fb; --panel:#ffffff; --card:#f8faff; --card2:#eef2fb;
+  --border:#c8d3e8; --border2:#b0bdd6;
+  --a1:#2563eb; --a2:#059669; --a3:#d97706; --a4:#db2777;
+  --txt:#0f172a; --muted:#64748b;
+}
+
+/*  RESET  */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;}
+
+/*  HEADER  */
+header{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px rgba(0,0,0,.3);
+}
+.logo{
+  width:38px;height:38px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--a1),var(--a4));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 0 12px rgba(96,165,250,.3);
+}
+.hinfo{flex:1;}
+.hinfo h1{font-size:13px;font-family:var(--mono);font-weight:600;letter-spacing:.04em;color:var(--txt);}
+.hinfo p{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:1px;}
+.theme-btn{
+  padding:7px 14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);font-family:var(--sans);font-size:12px;
+  font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;
+}
+.theme-btn:hover{color:var(--txt);border-color:var(--a1);box-shadow:0 0 8px rgba(96,165,250,.2);}
+
+/*  TABS  */
+.tabs{display:flex;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;gap:4px;}
+.tbb{
+  padding:13px 20px;background:none;border:none;
+  border-bottom:2px solid transparent;
+  color:var(--muted);font-family:var(--sans);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;letter-spacing:.01em;
+}
+.tbb:hover{color:var(--txt);}
+.tbb.active{color:var(--a1);border-bottom-color:var(--a1);}
+.tbb-compare{color:var(--a3)!important;}
+.tbb-compare.active{color:var(--a3)!important;border-bottom-color:var(--a3)!important;}
+
+/*  MAIN  */
+main{flex:1;padding:24px;max-width:1140px;width:100%;margin:0 auto;}
+.panel{display:none;}
+.panel.active{display:grid;gap:16px;}
+
+/* Grids */
+#panel-cesar{
+  grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+  grid-template-areas:"info info" "io  wheel" "table table" "steps steps";
+}
+#panel-bifido{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"info info" "io poly" "bsteps bsteps";
+}
+#panel-compare{
+  grid-template-columns:1fr;
+}
+.c-info{grid-area:info;}
+.c-io{grid-area:io;}
+.c-wheel{grid-area:wheel;}
+.c-table{grid-area:table;}
+.c-steps{grid-area:steps;}
+.c-poly{grid-area:poly;}
+.c-bsteps{grid-area:bsteps;}
+
+/*  CARD  */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 22px;transition:border-color .2s;
+}
+.card:hover{border-color:var(--border2);}
+.ctitle{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.ctitle::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/*  INFO CARD  */
+.info-card{
+  background:linear-gradient(135deg,var(--card) 0%,var(--card2) 100%);
+  border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.info-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);
+  border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:10px;
+  color:var(--a1);letter-spacing:.08em;text-transform:uppercase;width:fit-content;
+}
+.info-badge.green{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.2);color:var(--a2);}
+.info-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.2;}
+.info-body{font-size:13px;color:var(--muted);line-height:1.7;max-width:760px;}
+.info-body b{color:var(--txt);}
+.info-stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px;}
+.info-stat{
+  background:var(--bg);border:1px solid var(--border);border-radius:9px;
+  padding:10px 16px;display:flex;flex-direction:column;gap:2px;
+}
+.info-stat .sv{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--a1);}
+.info-stat .sl{font-size:11px;color:var(--muted);}
+.info-stat.g .sv{color:var(--a2);}
+.info-stat.y .sv{color:var(--a3);}
+.info-examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.ex-btn{
+  padding:6px 14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg);color:var(--muted);font-family:var(--mono);font-size:12px;
+  cursor:pointer;transition:all .2s;
+}
+.ex-btn:hover{color:var(--txt);border-color:var(--a1);background:rgba(96,165,250,.06);}
+
+/*  PASO A PASO GUIADO  */
+.guided-wrap{margin-top:6px;}
+.guided-nav{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;
+}
+.g-prev,.g-next{
+  padding:7px 16px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg);color:var(--muted);font-family:var(--sans);font-size:12px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+}
+.g-prev:hover,.g-next:hover{color:var(--txt);border-color:var(--a1);}
+.g-next{background:var(--a1);color:#040d1a;border-color:var(--a1);}
+.g-next:hover{background:var(--a2);border-color:var(--a2);color:#040d1a;}
+.g-next:disabled,.g-prev:disabled{opacity:.35;cursor:not-allowed;}
+.g-counter{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.guided-step{display:none;}
+.guided-step.active{display:flex;gap:10px;align-items:flex-start;
+  background:var(--card2);border:1px solid var(--a1);border-radius:9px;
+  padding:16px 18px;font-size:13px;font-family:var(--mono);
+  animation:fadeIn .25s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.sn{
+  background:var(--a1);color:#040d1a;border-radius:6px;
+  min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.sb{color:var(--muted);line-height:1.85;word-break:break-all;width:100%;}
+.sb b{color:var(--txt);}
+.hl{color:var(--a2);font-weight:700;}
+.hl2{color:var(--a3);font-weight:700;}
+.hlr{color:var(--a4);font-weight:700;}
+
+/* Modo libre (todos los pasos visibles) */
+.slist{display:flex;flex-direction:column;gap:7px;}
+.si{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:9px;padding:11px 14px;font-size:13px;font-family:var(--mono);
+  transition:border-color .2s;
+}
+.si:hover{border-color:var(--border2);}
+.mode-toggle-steps{
+  display:flex;gap:6px;margin-bottom:12px;
+}
+.mts-btn{
+  padding:5px 13px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:11px;font-weight:600;
+  font-family:var(--sans);cursor:pointer;transition:all .2s;
+}
+.mts-btn.active{background:var(--a1);color:#040d1a;border-color:var(--a1);}
+
+/*  FORM ELEMENTS  */
+.fl{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:5px;font-weight:600;}
+input[type=text],textarea{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:14px;
+  padding:10px 13px;outline:none;transition:border-color .2s,box-shadow .2s;
+}
+input[type=text]:focus,textarea:focus{
+  border-color:var(--a1);box-shadow:0 0 0 3px rgba(96,165,250,.12);
+}
+textarea{resize:vertical;height:88px;min-height:56px;}
+
+/*  SLIDER  */
+.swrap{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+input[type=range]{
+  flex:1;-webkit-appearance:none;height:5px;border-radius:3px;
+  background:linear-gradient(to right, var(--a1) var(--pct,12%), var(--border) var(--pct,12%));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;
+  background:var(--a1);border-radius:50%;cursor:pointer;
+  box-shadow:0 0 6px rgba(96,165,250,.5);transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
+.kbadge{
+  min-width:44px;height:44px;background:linear-gradient(135deg,var(--a1),var(--a4));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:18px;font-weight:700;color:#fff;
+  flex-shrink:0;box-shadow:0 0 12px rgba(96,165,250,.3);
+}
+
+/*  MODE TOGGLE  */
+.mtog{display:flex;gap:6px;margin-bottom:14px;}
+.mbtn{
+  padding:8px 20px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:13px;font-weight:700;
+  font-family:var(--sans);cursor:pointer;transition:all .2s;letter-spacing:.02em;
+}
+.mbtn:hover{color:var(--txt);border-color:var(--a1);}
+.mbtn.active{background:var(--a2);color:#081a12;border-color:var(--a2);box-shadow:0 0 10px rgba(52,211,153,.25);}
+
+/*  RESULT BOX  */
+.rbox{
+  background:var(--bg);border:1px solid var(--border);border-radius:9px;
+  padding:14px 50px 14px 16px;font-family:var(--mono);font-size:20px;font-weight:700;
+  color:var(--a2);letter-spacing:.1em;min-height:52px;word-break:break-all;
+  display:flex;align-items:center;position:relative;margin-top:5px;
+}
+.cpbtn{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:var(--border);border:none;border-radius:5px;color:var(--muted);
+  font-size:11px;padding:5px 10px;cursor:pointer;font-family:var(--sans);
+  font-weight:600;transition:all .15s;
+}
+.cpbtn:hover{background:var(--a1);color:#fff;}
+
+/*     LETRA ANIMADA  */
+@keyframes letterFly {
+  0%  { opacity:0; transform: translateY(-8px) scale(.7); }
+  60% { opacity:1; transform: translateY(2px) scale(1.08); }
+  100%{ opacity:1; transform: translateY(0)   scale(1); }
+}
+.rbox span.letter-anim {
+  display:inline-block;
+  animation: letterFly .35s ease both;
+}
+
+/*  FORMULA  */
+.formula{
+  display:inline-flex;align-items:center;
+  background:var(--bg);border:1px solid var(--border);border-radius:7px;
+  padding:7px 14px;font-family:var(--mono);font-size:12px;color:var(--a3);
+  margin-bottom:14px;
+}
+
+/*  NOTA  */
+.note{font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--sans);line-height:1.6;}
+.legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-family:var(--mono);}
+.leg-sq{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+/*  RUEDA  */
+.wheel-wrap{display:flex;justify-content:center;align-items:center;padding:8px 0;}
+#wh{border-radius:50%;cursor:default;}
+
+/*  TABLA ALFABETO  */
+.alpha-scroll{overflow-x:auto;padding-bottom:6px;}
+.arlbl{font-size:11px;color:var(--muted);margin-bottom:5px;font-family:var(--mono);font-weight:600;letter-spacing:.06em;}
+.arow{display:flex;gap:3px;min-width:max-content;margin-bottom:4px;}
+.ac{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;font-weight:700;border-radius:5px;
+  background:var(--bg);border:1px solid var(--border);color:var(--muted);
+  transition:all .25s;
+}
+.ac.phi{background:rgba(96,165,250,.15);border-color:var(--a1);color:var(--a1);}
+.ac.chi{background:rgba(52,211,153,.12);border-color:var(--a2);color:var(--a2);}
+
+/*  POLIBIO  */
+.pwrap{overflow-x:auto;}
+table.poly{border-collapse:separate;border-spacing:3px;font-family:var(--mono);font-size:14px;}
+table.poly td{
+  width:50px;height:50px;text-align:center;font-weight:700;
+  color:var(--muted);border-radius:7px;background:var(--bg);
+  border:1px solid var(--border);transition:all .2s;
+}
+table.poly td.hdr{background:transparent;font-size:11px;font-weight:400;color:var(--muted);border:none;}
+table.poly td.mhi{
+  background:rgba(96,165,250,.12);color:var(--a1);
+  border-color:var(--a1);box-shadow:0 0 8px rgba(96,165,250,.18);
+}
+table.poly td.mhi:hover{background:rgba(96,165,250,.25);}
+
+/*  COORD CHIP  */
+.coord-chip{
+  display:inline-flex;align-items:center;gap:3px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;padding:3px 8px;
+  font-family:var(--mono);font-size:12px;color:var(--muted);margin:2px;
+}
+
+/*  BAND  */
+.band{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+.bchip{
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:700;
+}
+.bchip.row{background:rgba(96,165,250,.15);color:var(--a1);border:1px solid rgba(96,165,250,.3);}
+.bchip.col{background:rgba(52,211,153,.12);color:var(--a2);border:1px solid rgba(52,211,153,.25);}
+.bchip.neutral{background:var(--bg);border:1px solid var(--border);color:var(--txt);}
+
+/*  TAGS  */
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-weight:700;margin-left:5px;}
+.tp{background:rgba(96,165,250,.15);color:var(--a1);}
+.tt{background:rgba(52,211,153,.12);color:var(--a2);}
+
+/*  VALIDACIÓN  */
+.verr{font-size:11px;color:var(--a4);font-family:var(--mono);margin-top:4px;min-height:14px;}
+
+/*  COMPARATIVA  */
+.compare-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+.compare-header{
+  grid-column:1/-1;
+  display:flex;align-items:center;gap:12px;padding:18px 22px;
+  background:linear-gradient(135deg,rgba(251,191,36,.07),rgba(244,114,182,.04));
+  border:1px solid rgba(251,191,36,.2);border-radius:var(--radius);
+}
+.compare-header .ico{font-size:28px;}
+.compare-header h2{font-size:16px;font-weight:800;color:var(--txt);}
+.compare-header p{font-size:12px;color:var(--muted);margin-top:2px;}
+.c-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px;display:flex;flex-direction:column;gap:12px;
+}
+.c-card h3{font-size:15px;font-weight:700;color:var(--txt);}
+.c-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px;}
+.c-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.c-cell{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;
+}
+.c-cell .cval{font-family:var(--mono);font-size:13px;color:var(--txt);line-height:1.6;}
+.c-cell .ctag{
+  display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;
+  font-family:var(--mono);font-weight:700;margin-top:6px;
+}
+.ctag.easy{background:rgba(52,211,153,.12);color:var(--a2);}
+.ctag.med{background:rgba(251,191,36,.1);color:var(--a3);}
+.ctag.hard{background:rgba(244,114,182,.1);color:var(--a4);}
+.ctag.weak{background:rgba(244,114,182,.1);color:var(--a4);}
+.ctag.better{background:rgba(251,191,36,.1);color:var(--a3);}
+.sec-bar{
+  height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:6px;
+}
+.sec-fill{height:100%;border-radius:5px;transition:width .6s ease;}
+.verdict{
+  grid-column:1/-1;background:var(--card2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 22px;
+}
+.verdict h3{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:10px;font-family:var(--mono);}
+.verdict-list{display:flex;flex-direction:column;gap:8px;}
+.vitem{display:flex;align-items:flex-start;gap:10px;font-size:13px;}
+.vico{font-size:15px;flex-shrink:0;margin-top:1px;}
+.vtxt{color:var(--muted);line-height:1.6;}
+.vtxt b{color:var(--txt);}
+
+/*  RESPONSIVE  */
+@media(max-width:740px){
+  #panel-cesar{grid-template-columns:1fr;grid-template-areas:"info""io""wheel""table""steps";}
+  #panel-bifido{grid-template-columns:1fr;grid-template-areas:"info""io""poly""bsteps";}
+  .compare-grid{grid-template-columns:1fr;}
+  .compare-header,.verdict{grid-column:1;}
+  header h1{font-size:11px;}
+  main{padding:14px;}
+  .c-row{grid-template-columns:1fr;}
+}
+
+/*  SCROLL  */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/*  MODO PRESENTACIÓN  */
+body.presentation header .hinfo p,
+body.presentation .tabs,
+body.presentation .ctitle::after,
+body.presentation .theme-btn { transition: opacity .3s; }
+body.presentation { --bg:#05080f; }
+#pres-btn{
+  padding:7px 13px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);font-family:var(--sans);font-size:12px;
+  font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;
+}
+#pres-btn:hover{color:var(--txt);border-color:var(--a3);}
+#pres-overlay{
+  display:none;position:fixed;inset:0;background:var(--bg);z-index:200;
+  flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  padding:40px;
+}
+#pres-overlay.active{display:flex;}
+#pres-overlay h2{
+  font-size:clamp(24px,4vw,48px);font-weight:800;color:var(--txt);
+  text-align:center;line-height:1.2;
+}
+#pres-overlay .pres-sub{
+  font-family:var(--mono);font-size:clamp(11px,2vw,16px);color:var(--muted);text-align:center;
+}
+.pres-cipher-display{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:32px 48px;text-align:center;min-width:min(90vw,560px);
+}
+.pres-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.pres-value{font-family:var(--mono);font-size:clamp(20px,5vw,40px);font-weight:700;color:var(--a2);letter-spacing:.12em;word-break:break-all;}
+.pres-input-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.pres-input-row input{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  color:var(--txt);font-family:var(--mono);font-size:16px;padding:10px 14px;
+  outline:none;min-width:220px;
+}
+.pres-input-row input:focus{border-color:var(--a1);}
+.pres-close{
+  padding:9px 22px;border-radius:9px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);font-family:var(--sans);font-size:13px;
+  font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px;
+}
+.pres-close:hover{color:var(--txt);border-color:var(--a4);}
+.pres-tabs{display:flex;gap:8px;justify-content:center;}
+.pres-tab{
+  padding:8px 20px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-family:var(--sans);font-size:13px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+}
+.pres-tab.active{background:var(--a1);color:#040d1a;border-color:var(--a1);}
+</style>
+</head>
+<body>
+
+<!-- ══ MODO PRESENTACIÓN ══ -->
+<div id="pres-overlay">
+  <div>
+    <h2>🔐 Cifrados Clásicos</h2>
+    <p class="pres-sub">Ética Profesional y Derecho Informático — Proyecto</p>
+  </div>
+  <div class="pres-tabs">
+    <button class="pres-tab active" onclick="presTab('cesar')">César</button>
+    <button class="pres-tab" onclick="presTab('bifido')">Bífido</button>
+  </div>
+  <div class="pres-cipher-display">
+    <div class="pres-label">Entrada</div>
+    <div class="pres-input-row">
+      <input id="pres-in" type="text" value="HOLA MUNDO" oninput="presUpdate()" style="text-transform:uppercase">
+    </div>
+    <div style="margin-top:20px;">
+      <div class="pres-label" id="pres-out-label">Cifrado César (K=3)</div>
+      <div class="pres-value" id="pres-out">KROD PXQGR</div>
+    </div>
+  </div>
+  <button class="pres-close" onclick="togglePresentation()">✕ Cerrar presentación</button>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo"> IDS </div>
+  <div class="hinfo">
+    <h1>Ética Profesional y Derecho Informático</h1>
+    <p>Proyecto — Métodos de Cifrado</p>
+  </div>
+  <button id="pres-btn" onclick="togglePresentation()">⛶ Presentar</button>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌞 Claro</button>
+</header>
+
+<!-- ══ TABS ══ -->
+<div class="tabs">
+  <button class="tbb active" onclick="showTab('cesar')">⚙ Cifrado César</button>
+  <button class="tbb" onclick="showTab('bifido')">⬡ Cifrado Bífido</button>
+  <button class="tbb tbb-compare" onclick="showTab('compare')">⇌ Comparativa</button>
+</div>
+
+<main>
+
+<!-- 
+     PANEL CÉSAR
+ -->
+<div class="panel active" id="panel-cesar">
+
+  <!-- INFO -->
+  <div class="info-card c-info">
+    <div><span class="info-badge">📜 Siglo I a.C.</span></div>
+    <div class="info-title">Cifrado César</div>
+    <div class="info-body">
+      Creado por <b>Julio César</b> para comunicaciones militares secretas, es uno de los cifrados más simples y conocidos de la historia.
+      Funciona <b>desplazando cada letra del mensaje un número fijo de posiciones</b> en el alfabeto. Si la clave es K=3, la A se convierte en D, la B en E, y así sucesivamente.
+      Aunque hoy es trivialmente rompible (solo hay 25 desplazamientos posibles), fue efectivo en su época porque la mayoría de los enemigos eran analfabetos.
+    </div>
+    <div class="info-stats">
+      <div class="info-stat"><span class="sv">25</span><span class="sl">Claves posibles</span></div>
+      <div class="info-stat g"><span class="sv">1</span><span class="sl">Operación por letra</span></div>
+      <div class="info-stat y"><span class="sv">~50 a.C.</span><span class="sl">Origen histórico</span></div>
+    </div>
+    <div>
+      <div class="fl" style="margin-bottom:8px;">Ejemplos rápidos →</div>
+      <div class="info-examples">
+        <button class="ex-btn" onclick="loadExample('cesar','HOLA MUNDO')">HOLA MUNDO</button>
+        <button class="ex-btn" onclick="loadExample('cesar','HATES PARA TODOS')">HATES PARA TODOS</button>
+        <button class="ex-btn" onclick="loadExample('cesar','SECRETO')">SECRETO</button>
+        <button class="ex-btn" onclick="loadExample('cesar','ETICA PROFESIONAL')">ETICA PROFESIONAL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IO -->
+  <div class="card c-io">
+    <div class="ctitle">Configuración — Cifrado César</div>
+    <div class="mtog">
+      <button class="mbtn active" id="ce-enc" onclick="setCMode('enc')">▲ Cifrar</button>
+      <button class="mbtn" id="ce-dec" onclick="setCMode('dec')">▼ Descifrar</button>
+    </div>
+    <div class="formula" id="ce-formula">C = (P <span id="ce-op">+</span> K) mod 26</div>
+    <div class="fl">Clave de desplazamiento K</div>
+    <div class="swrap">
+      <input type="range" id="ce-sl" min="1" max="25" value="3" oninput="updateCesar()">
+      <div class="kbadge" id="ce-k">3</div>
+    </div>
+    <div class="fl">Texto de entrada <span style="font-size:10px;color:var(--muted);">(solo A–Z, sin Ñ)</span></div>
+    <textarea id="ce-in" oninput="updateCesar()" placeholder="Escribe aquí tu mensaje..."></textarea>
+    <div class="verr" id="ce-err"></div>
+    <div class="fl" style="margin-top:12px;">Texto original</div>
+    <div class="rbox" style="font-size:15px;color:var(--a3);" id="ce-orig"><span>—</span></div>
+    <div class="fl" style="margin-top:10px;">Resultado</div>
+    <div class="rbox" id="ce-out"><span></span><button class="cpbtn" onclick="doCopy('ce-out')">copiar</button></div>
+  </div>
+
+  <!-- RUEDA -->
+  <div class="card c-wheel">
+    <div class="ctitle">Rueda de sustitución César</div>
+    <div class="wheel-wrap"><canvas id="wh" width="240" height="240"></canvas></div>
+    <div class="legend-row">
+      <div class="leg"><div class="leg-sq" style="background:rgba(96,165,250,.3);border:1px solid var(--a1);"></div>Texto plano</div>
+      <div class="leg"><div class="leg-sq" style="background:rgba(52,211,153,.2);border:1px solid var(--a2);"></div>Texto cifrado</div>
+    </div>
+    <p class="note" style="margin-top:8px;">El anillo exterior muestra el alfabeto original. El interior muestra el alfabeto desplazado K posiciones. Las letras del mensaje aparecen resaltadas.</p>
+  </div>
+
+  <!-- TABLA ALFABETO -->
+  <div class="card c-table">
+    <div class="ctitle">Corrimiento de letras — Tabla de equivalencias</div>
+    <div class="alpha-scroll">
+      <div class="arlbl">TEXTO PLANO <span class="tag tp">plano</span></div>
+      <div class="arow" id="row-plain"></div>
+      <div class="arlbl" style="margin-top:10px;">TEXTO CIFRADO <span class="tag tt">cifrado (+K)</span></div>
+      <div class="arow" id="row-cipher"></div>
+    </div>
+    <div class="legend-row" style="margin-top:10px;">
+      <div class="leg"><div class="leg-sq" style="background:rgba(96,165,250,.15);border:1px solid var(--a1);"></div>Letras del mensaje</div>
+      <div class="leg"><div class="leg-sq" style="background:rgba(52,211,153,.12);border:1px solid var(--a2);"></div>Letras cifradas resultantes</div>
+    </div>
+  </div>
+
+  <!-- PASOS -->
+  <div class="card c-steps">
+    <div class="ctitle">Proceso de desplazamiento — Paso a paso</div>
+    <div class="mode-toggle-steps">
+      <button class="mts-btn active" id="ce-mode-guided" onclick="setCStepMode('guided')">📖 Guiado</button>
+      <button class="mts-btn" id="ce-mode-free" onclick="setCStepMode('free')">📋 Todos los pasos</button>
+    </div>
+    <!-- Modo guiado -->
+    <div id="ce-guided-wrap" class="guided-wrap">
+      <div class="guided-nav">
+        <button class="g-prev" id="ce-prev" onclick="ceStep(-1)">← Anterior</button>
+        <span class="g-counter" id="ce-counter">Paso 1 de 1</span>
+        <button class="g-next" id="ce-next" onclick="ceStep(1)">Siguiente →</button>
+      </div>
+      <div id="ce-guided-steps"></div>
+    </div>
+    <!-- Modo libre -->
+    <div id="ce-free-wrap" style="display:none;">
+      <div class="slist" id="ce-steps">
+        <div class="si"><div class="sb">Escribe texto para ver los pasos.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-cesar -->
+
+
+<!-- 
+     PANEL BÍFIDO
+ -->
+<div class="panel" id="panel-bifido">
+
+  <!-- INFO -->
+  <div class="info-card c-info">
+    <div><span class="info-badge green">📐 ~1901</span></div>
+    <div class="info-title">Cifrado Bífido</div>
+    <div class="info-body">
+      Inventado por el criptógrafo francés <b>Félix Delastelle</b> alrededor de 1901, el cifrado Bífido combina
+      el <b>cuadro de Polibio</b> con una técnica de fraccionamiento: convierte cada letra en dos dígitos (fila y columna),
+      los mezcla separando filas y columnas en dos bandas, y luego los recombina por columnas para generar las letras cifradas.
+      Esta doble operación lo hace <b>mucho más resistente</b> al análisis de frecuencia que el cifrado César.
+    </div>
+    <div class="info-stats">
+      <div class="info-stat"><span class="sv">25</span><span class="sl">Celdas del cuadro</span></div>
+      <div class="info-stat g"><span class="sv">5</span><span class="sl">Pasos del algoritmo</span></div>
+      <div class="info-stat y"><span class="sv">1901</span><span class="sl">Año de creación</span></div>
+    </div>
+    <div>
+      <div class="fl" style="margin-bottom:8px;">Ejemplos rápidos →</div>
+      <div class="info-examples">
+        <button class="ex-btn" onclick="loadExample('bifido','HOLA MUNDO')">HOLA MUNDO</button>
+        <button class="ex-btn" onclick="loadExample('bifido','CRIPTOGRAFIA')">CRIPTOGRAFIA</button>
+        <button class="ex-btn" onclick="loadExample('bifido','SEGURIDAD')">SEGURIDAD</button>
+        <button class="ex-btn" onclick="loadExample('bifido','DERECHO INFORMATICO')">DERECHO INFORMATICO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IO -->
+  <div class="card c-io">
+    <div class="ctitle">Configuración — Cifrado Bífido</div>
+    <div class="mtog">
+      <button class="mbtn active" id="bi-enc" onclick="setBMode('enc')">▲ Cifrar</button>
+      <button class="mbtn" id="bi-dec" onclick="setBMode('dec')">▼ Descifrar</button>
+    </div>
+    <div class="fl">Texto de entrada <span style="font-size:10px;color:var(--muted);">(A–Z sin Ñ; J→I automático)</span></div>
+    <input type="text" id="bi-in" value="HOLA MUNDO" oninput="updateBifido()" style="text-transform:uppercase;margin-bottom:6px;">
+    <div class="verr" id="bi-err"></div>
+    <div class="fl" style="margin-top:10px;">Texto limpio procesado</div>
+    <div class="rbox" style="font-size:15px;color:var(--a3);" id="bi-clean"><span>—</span></div>
+    <div class="fl" style="margin-top:10px;">Resultado</div>
+    <div class="rbox" id="bi-out"><span></span><button class="cpbtn" onclick="doCopy('bi-out')">copiar</button></div>
+    <p class="note" style="margin-top:10px;">* <b>J</b> se trata como <b>I</b> (cuadro 5×5 = 25 celdas). &nbsp;|&nbsp; Alfabeto de 26 caracteres sin la Ñ.</p>
+  </div>
+
+  <!-- POLIBIO -->
+  <div class="card c-poly">
+    <div class="ctitle">Cuadro de Polibio — Matriz fija 5×5</div>
+    <div class="pwrap"><table class="poly" id="ptbl"></table></div>
+    <div class="legend-row" style="margin-top:12px;">
+      <div class="leg"><div class="leg-sq" style="background:rgba(96,165,250,.12);border:1px solid var(--a1);"></div>Letras del mensaje</div>
+    </div>
+    <p class="note" style="margin-top:8px;">El cuadro mapea cada letra a una coordenada (fila, columna) del 1 al 5. I y J comparten celda.</p>
+  </div>
+
+  <!-- PASOS BÍFIDO -->
+  <div class="card c-bsteps">
+    <div class="ctitle">Proceso completo — Paso a paso Bífido</div>
+    <div class="mode-toggle-steps">
+      <button class="mts-btn active" id="bi-mode-guided" onclick="setBStepMode('guided')">📖 Guiado</button>
+      <button class="mts-btn" id="bi-mode-free" onclick="setBStepMode('free')">📋 Todos los pasos</button>
+    </div>
+    <!-- Guiado -->
+    <div id="bi-guided-wrap" class="guided-wrap">
+      <div class="guided-nav">
+        <button class="g-prev" id="bi-prev" onclick="biStep(-1)">← Anterior</button>
+        <span class="g-counter" id="bi-counter">Paso 1 de 6</span>
+        <button class="g-next" id="bi-next" onclick="biStep(1)">Siguiente →</button>
+      </div>
+      <div id="bi-guided-steps"></div>
+    </div>
+    <!-- Libre -->
+    <div id="bi-free-wrap" style="display:none;">
+      <div class="slist" id="bi-steps">
+        <div class="si"><div class="sb">Escribe texto para ver los pasos.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-bifido -->
+
+
+<!-- 
+     PANEL COMPARATIVA
+ -->
+<div class="panel" id="panel-compare">
+  <div class="compare-grid">
+
+    <div class="compare-header">
+      <div class="ico">⇌</div>
+      <div>
+        <h2>César vs Bífido — Comparativa</h2>
+        <p>Análisis de ambos métodos: historia, funcionamiento, seguridad y aplicaciones.</p>
+      </div>
+    </div>
+
+    <!-- César -->
+    <div class="c-card">
+      <h3 style="color:var(--a1);">⚙ Cifrado César</h3>
+
+      <div>
+        <div class="c-label">Historia</div>
+        <div class="c-cell"><div class="cval">Julio César, ~50 a.C. Usado para comunicaciones militares romanas.</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Tipo de cifrado</div>
+        <div class="c-cell"><div class="cval">Sustitución monoalfabética — cada letra siempre se sustituye por la misma.</div><div class="ctag easy">Simple</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Clave</div>
+        <div class="c-cell"><div class="cval">Un número del 1 al 25 (el desplazamiento K).</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Operación</div>
+        <div class="c-cell"><div class="cval" style="font-family:var(--mono);">C = (P + K) mod 26</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Espacio de claves</div>
+        <div class="c-cell"><div class="cval">Solo <b>25 combinaciones</b>. Un atacante puede probarlas todas en segundos.</div><div class="ctag weak">Muy débil</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Vulnerabilidades</div>
+        <div class="c-cell"><div class="cval">Análisis de frecuencia, fuerza bruta (25 intentos). La E sigue siendo la letra más frecuente.</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Seguridad (0–10)</div>
+        <div class="c-cell">
+          <div class="cval">1 / 10</div>
+          <div class="sec-bar"><div class="sec-fill" style="width:10%;background:var(--a4);"></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="c-label">Uso hoy</div>
+        <div class="c-cell"><div class="cval">Solo educativo. ROT13 (K=13) se usa en foros para ocultar spoilers.</div></div>
+      </div>
+    </div>
+
+    <!-- Bífido -->
+    <div class="c-card">
+      <h3 style="color:var(--a2);">⬡ Cifrado Bífido</h3>
+
+      <div>
+        <div class="c-label">Historia</div>
+        <div class="c-cell"><div class="cval">Félix Delastelle, ~1901. Cifrado polibiano con fraccionamiento.</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Tipo de cifrado</div>
+        <div class="c-cell"><div class="cval">Sustitución fraccionada — mezcla coordenadas de letras distintas, rompiendo patrones.</div><div class="ctag med">Moderado</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Clave</div>
+        <div class="c-cell"><div class="cval">El orden del cuadro de Polibio (puede ser palabras clave). Versión estándar: orden alfabético.</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Operación</div>
+        <div class="c-cell"><div class="cval" style="font-family:var(--mono);">Coordenadas → tira → split → recombinar columnas</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Espacio de claves</div>
+        <div class="c-cell"><div class="cval">25! permutaciones del cuadro ≈ 1.5 × 10²⁵ combinaciones posibles.</div><div class="ctag better">Significativamente mayor</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Vulnerabilidades</div>
+        <div class="c-cell"><div class="cval">Análisis de bigramas, ataques de texto claro conocido. Vulnerable con mensajes muy largos.</div></div>
+      </div>
+
+      <div>
+        <div class="c-label">Seguridad (0–10)</div>
+        <div class="c-cell">
+          <div class="cval">4 / 10</div>
+          <div class="sec-bar"><div class="sec-fill" style="width:40%;background:var(--a3);"></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="c-label">Uso hoy</div>
+        <div class="c-cell"><div class="cval">Educativo y en criptografía recreativa. Históricamente usado en la Primera Guerra Mundial.</div></div>
+      </div>
+    </div>
+
+    <!-- Veredicto -->
+    <div class="verdict">
+      <h3>🔍 Conclusiones</h3>
+      <div class="verdict-list">
+        <div class="vitem">
+          <span class="vico">📌</span>
+          <span class="vtxt"><b>Ambos son cifrados clásicos históricos</b> sin aplicación en seguridad moderna — hoy usamos AES, RSA y criptografía de curva elíptica.</span>
+        </div>
+        <div class="vitem">
+          <span class="vico">⚖️</span>
+          <span class="vtxt"><b>El Bífido es significativamente más seguro que el César</b>: su espacio de claves es astronómicamente mayor y rompe la correlación directa letra→letra.</span>
+        </div>
+        <div class="vitem">
+          <span class="vico">📚</span>
+          <span class="vtxt"><b>Valor educativo:</b> el César enseña el concepto de sustitución y módulo aritmético; el Bífido introduce fraccionamiento, matrices y combinatoria.</span>
+        </div>
+        <div class="vitem">
+          <span class="vico">🔓</span>
+          <span class="vtxt"><b>Ambos son rompibles</b> con análisis de frecuencia, suficiente texto cifrado y las herramientas computacionales actuales.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /panel-compare -->
+
+</main>
+
+<script>
+/* 
+   CONSTANTES
+ */
+const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const SQ  = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'.split('');
+
+/* 
+   ESTADO GLOBAL
+ */
+let cMode = 'enc';
+let bMode = 'enc';
+let hiSet = new Set();
+let ciSet = new Set();
+
+// Pasos guiados
+let ceStepData = [];
+let ceStepIdx  = 0;
+let ceStepMode = 'guided';
+
+let biStepData = [];
+let biStepIdx  = 0;
+let biStepMode = 'guided';
+
+// Modo presentación
+let presMode = 'cesar';
+
+/* ══ UTILIDADES ══ */
+function setOut(id, val, animate = false) {
+  const el = document.getElementById(id);
+  if (animate && val) {
+    const letters = val.split('').map((ch, i) =>
+      `<span class="letter-anim" style="animation-delay:${i * 40}ms">${ch}</span>`
+    ).join('');
+    el.innerHTML = `<span style="letter-spacing:.1em">${letters}</span><button class="cpbtn" onclick="doCopy('${id}')">copiar</button>`;
+  } else {
+    el.innerHTML = `<span>${val || '—'}</span><button class="cpbtn" onclick="doCopy('${id}')">copiar</button>`;
+  }
+}
+
+function doCopy(id) {
+  const el = document.getElementById(id);
+  const s = el.querySelector('span');
+  navigator.clipboard.writeText(s ? s.textContent : el.textContent).catch(() => {});
+  const b = el.querySelector('.cpbtn');
+  if (b) { b.textContent = '✓'; setTimeout(() => b.textContent = 'copiar', 1200); }
+}
+
+function showTab(t) {
+  document.querySelectorAll('.tbb').forEach((b, i) =>
+    b.classList.toggle('active', ['cesar','bifido','compare'][i] === t));
+  document.querySelectorAll('.panel').forEach((p, i) =>
+    p.classList.toggle('active', ['panel-cesar','panel-bifido','panel-compare'][i] === 'panel-' + t));
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-btn').innerHTML = isLight ? '🌙 Oscuro' : '🌞 Claro';
+  drawWheel(+document.getElementById('ce-sl').value);
+}
+
+function loadExample(cipher, text) {
+  if (cipher === 'cesar') {
+    document.getElementById('ce-in').value = text;
+    updateCesar();
+    showTab('cesar');
+  } else {
+    document.getElementById('bi-in').value = text;
+    updateBifido();
+    showTab('bifido');
+  }
+}
+
+/* ══ MODO PRESENTACIÓN ══ */
+function togglePresentation() {
+  const ov = document.getElementById('pres-overlay');
+  ov.classList.toggle('active');
+  presUpdate();
+}
+function presTab(t) {
+  presMode = t;
+  document.querySelectorAll('.pres-tab').forEach((b, i) =>
+    b.classList.toggle('active', ['cesar','bifido'][i] === t));
+  presUpdate();
+}
+function presUpdate() {
+  const raw = (document.getElementById('pres-in').value || '').toUpperCase().replace(/[^A-Z]/g, '');
+  const k = +document.getElementById('ce-sl').value;
+  let result = '', label = '';
+  if (presMode === 'cesar') {
+    const dir = 1 * k;
+    result = raw.split('').map(c => ABC[((ABC.indexOf(c) + dir) % 26 + 26) % 26]).join('');
+    label = `Cifrado César (K=${k})`;
+  } else {
+    const r = bEncrypt(raw);
+    result = r.result;
+    label = 'Cifrado Bífido';
+  }
+  document.getElementById('pres-out').textContent = result || '—';
+  document.getElementById('pres-out-label').textContent = label;
+}
+
+/* ══ VALIDACIÓN ══ */
+function validateInput(raw) {
+  const upper = raw.toUpperCase();
+  const hasEnie = /Ñ/.test(upper);
+  const clean = upper.replace(/[^A-Z]/g, '');
+  let warn = '';
+  if (hasEnie) warn = '⚠ La Ñ no forma parte del alfabeto de 26 caracteres; fue ignorada.';
+  else if (/[^A-Z\s]/.test(upper)) warn = '⚠ Se ignoraron caracteres no alfabéticos (A–Z).';
+  return { valid: true, clean, warn };
+}
+
+/* 
+   LÓGICA CÉSAR
+ */
+function cLetter(l, k) {
+  const i = ABC.indexOf(l);
+  if (i < 0) return l;
+  return ABC[((i + k) % 26 + 26) % 26];
+}
+function cProcess(t, k) {
+  return t.split('').map(c => cLetter(c, k)).join('');
+}
+
+/* ══ PASO A PASO GUIADO CÉSAR ══ */
+function setCStepMode(m) {
+  ceStepMode = m;
+  document.getElementById('ce-mode-guided').classList.toggle('active', m === 'guided');
+  document.getElementById('ce-mode-free').classList.toggle('active', m === 'free');
+  document.getElementById('ce-guided-wrap').style.display = m === 'guided' ? '' : 'none';
+  document.getElementById('ce-free-wrap').style.display   = m === 'free'   ? '' : 'none';
+}
+function ceStep(dir) {
+  ceStepIdx = Math.max(0, Math.min(ceStepData.length - 1, ceStepIdx + dir));
+  renderCeGuided();
+}
+function renderCeGuided() {
+  const wrap = document.getElementById('ce-guided-steps');
+  wrap.innerHTML = '';
+  ceStepData.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'guided-step' + (i === ceStepIdx ? ' active' : '');
+    div.innerHTML = `<div class="sn">${s.n}</div><div class="sb">${s.b}</div>`;
+    wrap.appendChild(div);
+  });
+  const total = ceStepData.length;
+  document.getElementById('ce-counter').textContent = total ? `Paso ${ceStepIdx + 1} de ${total}` : '';
+  document.getElementById('ce-prev').disabled = ceStepIdx === 0;
+  document.getElementById('ce-next').disabled = ceStepIdx >= total - 1;
+}
+
+function updateCesar() {
+  const k   = +document.getElementById('ce-sl').value;
+  const raw = document.getElementById('ce-in').value;
+  const { clean, warn } = validateInput(raw);
+  document.getElementById('ce-err').textContent = warn;
+  document.getElementById('ce-k').textContent = k;
+  const sl = document.getElementById('ce-sl');
+  sl.style.setProperty('--pct', ((k - 1) / 24 * 100) + '%');
+  const dir = cMode === 'enc' ? k : -k;
+  const result = cProcess(clean, dir);
+  setOut('ce-out', result, true);
+  document.getElementById('ce-orig').innerHTML = `<span>${clean || '—'}</span>`;
+  hiSet = new Set(clean.split(''));
+  ciSet = new Set(clean.split('').map(l => cLetter(l, dir)));
+
+  ['row-plain','row-cipher'].forEach((id, ri) => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    ABC.split('').forEach(l => {
+      const d = document.createElement('div');
+      const shifted = ABC[((ABC.indexOf(l) + dir) % 26 + 26) % 26];
+      const inMsg   = hiSet.has(l);
+      const inCiph  = ciSet.has(shifted);
+      d.className = 'ac' + (ri === 0 && inMsg ? ' phi' : '') + (ri === 1 && inCiph ? ' chi' : '');
+      d.textContent = ri === 0 ? l : shifted;
+      el.appendChild(d);
+    });
+  });
+
+  const uniq = [...new Set(clean.split(''))].filter(Boolean);
+  const opSign = cMode === 'enc' ? '+' : '−';
+
+  const stepsHtml = uniq.map(l => {
+    const p    = ABC.indexOf(l);
+    const sign = cMode === 'enc' ? `+ ${k}` : `− ${k}`;
+    const raw2 = cMode === 'enc' ? p + k : p - k;
+    const res  = ((raw2 % 26) + 26) % 26;
+    return `<div class="si">
+      <div class="sn">${l}</div>
+      <div class="sb">
+        pos(<b>${l}</b>) = ${p}
+        &nbsp;<span class="hl2">${sign}</span>
+        = ${raw2} → mod 26 = ${res}
+        → <span class="hl">${ABC[res]}</span>
+        &nbsp;<span style="color:var(--muted);font-size:11px;">[fórmula: (${p} ${opSign} ${k}) mod 26 = ${res}]</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('ce-steps').innerHTML = uniq.length
+    ? stepsHtml
+    : '<div class="si"><div class="sb">Escribe texto para ver los pasos.</div></div>';
+
+  // Pasos guiados
+  if (!uniq.length) {
+    ceStepData = [];
+    ceStepIdx  = 0;
+    document.getElementById('ce-guided-steps').innerHTML =
+      '<div class="guided-step active"><div class="sb">Escribe texto para ver los pasos.</div></div>';
+    document.getElementById('ce-counter').textContent = '';
+    document.getElementById('ce-prev').disabled = true;
+    document.getElementById('ce-next').disabled = true;
+  } else {
+    const dir2 = cMode === 'enc' ? k : -k;
+    ceStepData = [
+      { n:'①', b:`<b>Texto de entrada:</b> ${clean}<br><span style="font-size:11px;color:var(--muted);">${clean.length} letras · Clave K = ${k} · Modo: ${cMode === 'enc' ? 'Cifrado' : 'Descifrado'}</span>` },
+      { n:'②', b:`<b>Fórmula aplicada:</b> <span style="font-family:var(--mono);color:var(--a3);">${cMode === 'enc' ? 'C = (P + K) mod 26' : 'P = (C − K + 26) mod 26'}</span><br>Cada letra se convierte a su posición numérica (A=0 … Z=25), se aplica el desplazamiento y se vuelve a convertir a letra.` },
+      ...uniq.map((l, idx) => {
+        const p   = ABC.indexOf(l);
+        const raw3 = cMode === 'enc' ? p + k : p - k;
+        const res2 = ((raw3 % 26) + 26) % 26;
+        return {
+          n: String(idx + 3),
+          b: `Letra <b>${l}</b> (pos ${p}) <span class="hl2">${cMode === 'enc' ? '+' : '−'} ${k}</span> = ${raw3} → mod 26 = ${res2} → <span class="hl">${ABC[res2]}</span>`
+        };
+      }),
+      { n:'✓', b:`<b>Resultado final:</b> <span class="hl" style="font-size:17px;letter-spacing:.1em;">${result || '—'}</span>` }
+    ];
+    ceStepIdx = Math.min(ceStepIdx, ceStepData.length - 1);
+    renderCeGuided();
+  }
+
+  drawWheel(k);
+  presUpdate();
+}
+
+/* ══ RUEDA ══ */
+function drawWheel(k) {
+  const cv  = document.getElementById('wh');
+  const ctx = cv.getContext('2d');
+  const W = 240, cx = 120, cy = 120;
+  const Ro = 113, Ri = 72, Rto = 98, Rti = 84;
+  const N  = 26;
+  const isLight = document.body.classList.contains('light');
+  ctx.clearRect(0, 0, W, W);
+  for (let i = 0; i < N; i++) {
+    const a0  = (i / N) * Math.PI * 2 - Math.PI / 2;
+    const a1  = ((i + 1) / N) * Math.PI * 2 - Math.PI / 2;
+    const mid = (a0 + a1) / 2;
+    const l   = ABC[i];
+    const dir = cMode === 'enc' ? k : -k;
+    const ci2 = ((i + dir) % 26 + 26) % 26;
+    const cl  = ABC[ci2];
+    const inM = hiSet.has(l);
+    const inC = ciSet.has(cl);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, Ro, a0, a1); ctx.closePath();
+    ctx.fillStyle = inM ? (isLight ? 'rgba(37,99,235,.18)' : 'rgba(96,165,250,.18)') : (isLight ? '#eef2fb' : '#111827');
+    ctx.strokeStyle = isLight ? '#c8d3e8' : '#1e2d45'; ctx.lineWidth = 1;
+    ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, Ri, a0, a1); ctx.closePath();
+    ctx.fillStyle = inC ? (isLight ? 'rgba(5,150,105,.14)' : 'rgba(52,211,153,.14)') : (isLight ? '#f1f5fb' : '#0d1220');
+    ctx.fill(); ctx.stroke();
+    const ox = cx + Rto * Math.cos(mid), oy = cy + Rto * Math.sin(mid);
+    ctx.fillStyle = inM ? (isLight ? '#2563eb' : '#60a5fa') : (isLight ? '#94a3b8' : '#475569');
+    ctx.font = (inM ? 'bold ' : '') + '10px "IBM Plex Mono"';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(l, ox, oy);
+    const ix = cx + Rti * Math.cos(mid), iy = cy + Rti * Math.sin(mid);
+    ctx.fillStyle = inC ? (isLight ? '#059669' : '#34d399') : (isLight ? '#94a3b8' : '#334155');
+    ctx.font = (inC ? 'bold ' : '') + '10px "IBM Plex Mono"';
+    ctx.fillText(cl, ix, iy);
+  }
+  ctx.fillStyle = isLight ? '#0F172a' : '#e2e8f0';
+  ctx.font = '15px "IBM Plex Mono"'; ctx.textAlign = 'center';
+  ctx.fillText(cMode === 'enc' ? 'CIFRADO' : 'DESCIFRADO', cx, cy - 6);
+  ctx.fillStyle = isLight ? '#0f172a' : '#e2e8f0';
+  ctx.font = 'bold 13px "IBM Plex Mono"';
+  ctx.fillText('K=' + k, cx, cy + 9);
+}
+
+/* ══ MODO CÉSAR ══ */
+function setCMode(m) {
+  cMode = m;
+  document.getElementById('ce-enc').classList.toggle('active', m === 'enc');
+  document.getElementById('ce-dec').classList.toggle('active', m === 'dec');
+  document.getElementById('ce-formula').innerHTML = m === 'enc'
+    ? `C = (P <span id="ce-op">+</span> K) mod 26`
+    : `P = (C <span id="ce-op">−</span> K + 26) mod 26`;
+  updateCesar();
+}
+
+/* 
+   LÓGICA BÍFIDO
+ */
+function gPos(l) {
+  l = l.toUpperCase().replace('J', 'I');
+  const i = SQ.indexOf(l);
+  return [Math.floor(i / 5) + 1, (i % 5) + 1];
+}
+function gLet(r, c) { return SQ[(r - 1) * 5 + (c - 1)]; }
+
+function bEncrypt(text) {
+  const clean = text.toUpperCase().replace(/J/g,'I').replace(/Ñ/g,'').replace(/[^A-IK-Z]/g,'');
+  const digits = [];
+  for (const c of clean) { const [r, col] = gPos(c); digits.push(r, col); }
+  const half = Math.floor(digits.length / 2);
+  const arriba = digits.slice(0, half), abajo = digits.slice(half, half * 2);
+  let out = '';
+  for (let i = 0; i < arriba.length; i++) out += gLet(arriba[i], abajo[i]);
+  return { result: out, clean, digits, arriba, abajo };
+}
+
+function bDecrypt(text) {
+  const clean = text.toUpperCase().replace(/J/g,'I').replace(/Ñ/g,'').replace(/[^A-IK-Z]/g,'');
+  const arriba = [], abajo = [];
+  for (const c of clean) { const [r, col] = gPos(c); arriba.push(r); abajo.push(col); }
+  const digits = [...arriba, ...abajo];
+  let out = '';
+  for (let i = 0; i < digits.length; i += 2) out += gLet(digits[i], digits[i + 1]);
+  return { result: out, clean, digits, arriba, abajo };
+}
+
+function renderPoly(mSet) {
+  let h = '<tr><td class="hdr" style="width:32px;"></td>';
+  for (let c = 1; c <= 5; c++) h += `<td class="hdr">${c}</td>`;
+  h += '</tr>';
+  for (let r = 1; r <= 5; r++) {
+    h += `<tr><td class="hdr">${r}</td>`;
+    for (let c = 1; c <= 5; c++) {
+      const ch = gLet(r, c), label = ch === 'I' ? 'I/J' : ch, hi = mSet.has(ch);
+      h += `<td class="${hi ? 'mhi' : ''}" style="${ch === 'I' ? 'font-size:11px;' : ''}">${label}</td>`;
+    }
+    h += '</tr>';
+  }
+  document.getElementById('ptbl').innerHTML = h;
+}
+
+function coordChip(letter, row, col, isResult = false) {
+  if (isResult) return `<span class="coord-chip">
+    <span style="color:var(--a1);font-weight:700;">${row}</span><span style="color:var(--muted);">,</span>
+    <span style="color:var(--a2);font-weight:700;">${col}</span>
+    <span style="color:var(--muted);margin:0 3px;">→</span>
+    <span style="color:var(--a3);font-weight:700;">${letter}</span></span>`;
+  return `<span class="coord-chip">
+    <span style="color:var(--a3);font-weight:700;">${letter}</span>
+    <span style="color:var(--muted);margin:0 3px;">→</span>
+    <span style="color:var(--a1);font-weight:700;">${row}</span><span style="color:var(--muted);">,</span>
+    <span style="color:var(--a2);font-weight:700;">${col}</span></span>`;
+}
+
+function chips(arr, cls) {
+  return arr.map(v => `<span class="bchip ${cls}">${v}</span>`).join('');
+}
+
+/* ══ PASO A PASO GUIADO BÍFIDO ══ */
+function setBStepMode(m) {
+  biStepMode = m;
+  document.getElementById('bi-mode-guided').classList.toggle('active', m === 'guided');
+  document.getElementById('bi-mode-free').classList.toggle('active', m === 'free');
+  document.getElementById('bi-guided-wrap').style.display = m === 'guided' ? '' : 'none';
+  document.getElementById('bi-free-wrap').style.display   = m === 'free'   ? '' : 'none';
+}
+function biStep(dir) {
+  biStepIdx = Math.max(0, Math.min(biStepData.length - 1, biStepIdx + dir));
+  renderBiGuided();
+}
+function renderBiGuided() {
+  const wrap = document.getElementById('bi-guided-steps');
+  wrap.innerHTML = '';
+  biStepData.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'guided-step' + (i === biStepIdx ? ' active' : '');
+    div.innerHTML = `<div class="sn">${s.n}</div><div class="sb">${s.b}</div>`;
+    wrap.appendChild(div);
+  });
+  const total = biStepData.length;
+  document.getElementById('bi-counter').textContent = total ? `Paso ${biStepIdx + 1} de ${total}` : '';
+  document.getElementById('bi-prev').disabled = biStepIdx === 0;
+  document.getElementById('bi-next').disabled = biStepIdx >= total - 1;
+}
+
+function updateBifido() {
+  const inp = document.getElementById('bi-in').value;
+  const upper = inp.toUpperCase();
+  let warn = '';
+  if (/Ñ/.test(upper)) warn = '⚠ La Ñ fue ignorada (alfabeto de 26 caracteres sin Ñ).';
+  else if (/[^A-Z\s]/i.test(inp)) warn = '⚠ Se ignoraron caracteres no alfabéticos (A–Z).';
+  document.getElementById('bi-err').textContent = warn;
+
+  const res = bMode === 'enc' ? bEncrypt(inp) : bDecrypt(inp);
+  setOut('bi-out', res.result, true);
+  document.getElementById('bi-clean').innerHTML = `<span>${res.clean || '—'}</span>`;
+
+  const mSet = new Set((res.clean || '').split(''));
+  renderPoly(mSet);
+
+  const chars = (res.clean || '').split('');
+  const n = chars.length;
+
+  // Construir pasos comunes
+  const coordChips = chars.map(c => { const [r, col] = gPos(c); return coordChip(c, r, col); }).join('');
+
+  let stepsArr = [];
+  if (bMode === 'enc') {
+    const bandDigits  = res.digits.map(d => `<span class="bchip neutral">${d}</span>`).join('');
+    const bandArriba  = chips(res.arriba, 'row');
+    const bandAbajo   = chips(res.abajo,  'col');
+    const pares = [];
+    for (let i = 0; i < res.arriba.length; i++) {
+      const ch = gLet(res.arriba[i], res.abajo[i]);
+      pares.push(coordChip(ch, res.arriba[i], res.abajo[i], true));
+    }
+    stepsArr = [
+      { n:'1', b:`Texto limpio: <b>${chars.join(' ')}</b><br><span style="font-size:11px;color:var(--muted);">${n} letra${n>1?'s':''} → ${n*2} dígitos totales</span>` },
+      { n:'2', b:`Conversión de letras a coordenadas (fila <span style="color:var(--a1);">█</span>, columna <span style="color:var(--a2);">█</span>):<br>${coordChips}` },
+      { n:'3', b:`Escribir todos los dígitos en una sola tira:<div class="band">${bandDigits}</div><span class="note">${res.digits.length} dígitos en total</span>` },
+      { n:'4', b:`Partir la tira por la mitad y formar dos filas:
+        <div style="display:flex;align-items:center;gap:8px;margin-top:7px;">
+          <span style="font-size:11px;color:var(--a1);min-width:56px;font-family:var(--mono);">ARRIBA:</span>
+          <div class="band">${bandArriba}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <span style="font-size:11px;color:var(--a2);min-width:56px;font-family:var(--mono);">ABAJO:&nbsp;</span>
+          <div class="band">${bandAbajo}</div>
+        </div>
+        <span class="note">Cada columna vertical → nueva coordenada: <span style="color:var(--a1);">arriba</span> = fila, <span style="color:var(--a2);">abajo</span> = columna</span>` },
+      { n:'5', b:`Leer por columnas → cada par (arriba, abajo) → nueva letra:<br>${pares.join('')}` },
+      { n:'6', b:`Mensaje cifrado: <span class="hl" style="font-size:18px;letter-spacing:.1em;">${res.result || '—'}</span>` }
+    ];
+  } else {
+    const bandArriba = chips(res.arriba, 'row');
+    const bandAbajo  = chips(res.abajo,  'col');
+    const bandDigits = res.digits.map(d => `<span class="bchip neutral">${d}</span>`).join('');
+    const pares2 = [];
+    for (let i = 0; i < res.digits.length; i += 2) {
+      const ch = gLet(res.digits[i], res.digits[i + 1]);
+      pares2.push(coordChip(ch, res.digits[i], res.digits[i + 1], true));
+    }
+    stepsArr = [
+      { n:'1', b:`Texto cifrado: <b>${chars.join(' ')}</b><br><span style="font-size:11px;color:var(--muted);">${n} letra${n>1?'s':''}</span>` },
+      { n:'2', b:`Coordenadas de cada letra cifrada — fila → ARRIBA, columna → ABAJO:<br>${coordChips}` },
+      { n:'3', b:`Separar en dos bandas:
+        <div style="display:flex;align-items:center;gap:8px;margin-top:7px;">
+          <span style="font-size:11px;color:var(--a1);min-width:56px;font-family:var(--mono);">ARRIBA:</span>
+          <div class="band">${bandArriba}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <span style="font-size:11px;color:var(--a2);min-width:56px;font-family:var(--mono);">ABAJO:&nbsp;</span>
+          <div class="band">${bandAbajo}</div>
+        </div>` },
+      { n:'4', b:`Reconstruir la tira concatenando ARRIBA + ABAJO y leer pares:<div class="band" style="margin-top:6px;">${bandDigits}</div>` },
+      { n:'5', b:`Cada par de dígitos → letra original del cuadro:<br>${pares2.join('')}` },
+      { n:'6', b:`Mensaje descifrado: <span class="hl" style="font-size:18px;letter-spacing:.1em;">${res.result || '—'}</span>` }
+    ];
+  }
+
+  // Modo libre
+  document.getElementById('bi-steps').innerHTML = n
+    ? stepsArr.map(s => `<div class="si"><div class="sn">${s.n}</div><div class="sb">${s.b}</div></div>`).join('')
+    : '<div class="si"><div class="sb">Escribe texto para ver los pasos.</div></div>';
+
+  // Modo guiado
+  if (!n) {
+    biStepData = [];
+    biStepIdx  = 0;
+    document.getElementById('bi-guided-steps').innerHTML =
+      '<div class="guided-step active"><div class="sb">Escribe texto para ver los pasos.</div></div>';
+    document.getElementById('bi-counter').textContent = '';
+    document.getElementById('bi-prev').disabled = true;
+    document.getElementById('bi-next').disabled = true;
+  } else {
+    biStepData = stepsArr;
+    biStepIdx  = Math.min(biStepIdx, biStepData.length - 1);
+    renderBiGuided();
+  }
+}
+
+function setBMode(m) {
+  bMode = m;
+  document.getElementById('bi-enc').classList.toggle('active', m === 'enc');
+  document.getElementById('bi-dec').classList.toggle('active', m === 'dec');
+  updateBifido();
+}
+
+/* ══ INICIO ══ */
+updateCesar();
+updateBifido();
+</script>
+</body>
+</html>
