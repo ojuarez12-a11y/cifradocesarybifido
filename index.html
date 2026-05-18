@@ -902,9 +902,9 @@ body.presentation { --bg:#05080f; }
     </div>
     <div class="info-title">Romper Cifrados — Motor C++ vía WASM</div>
     <div class="info-body">
-      El algoritmo de <b>fuerza bruta</b> está escrito en <b>C++</b>, compilado a <b>WebAssembly (.wasm)</b>
-      y ejecutado directamente en tu navegador. No hay servidor: el código nativo corre a velocidad casi nativa
-      dentro de la sandbox del browser. La lógica es idéntica al archivo <code style="font-family:var(--mono);font-size:12px;color:var(--a3);">RompeCifrado.cpp</code>.
+      El algoritmo de <b>fuerza bruta</b> prueba todas las posibles combinaciones <b>(del 1 al 25).</b>
+      Para cada intento, el programa desplaza las letras del texto cifrado hacia atrás en el alfabeto y 
+      genera una versión candidata del mensaje original. 
     </div>
     <div class="bk-engine-row">
       <span>🔧 Motor:</span>
@@ -923,7 +923,7 @@ body.presentation { --bg:#05080f; }
       <!-- Cipher selector -->
       <div class="bk-tabs">
         <button class="bk-tab active" id="bk-tab-cesar" onclick="bkSetCipher('cesar')">⚙ César</button>
-        <button class="bk-tab" id="bk-tab-bifid" onclick="bkSetCipher('bifido')">⬡ Bifido</button>
+        <button class="bk-tab" id="bk-tab-bifid" onclick="bkSetCipher('bifid')">⬡ Bifid</button>
       </div>
 
       <div class="fl">Texto cifrado <span style="font-size:10px;color:var(--muted);">(MAYÚSCULAS)</span></div>
@@ -1518,7 +1518,9 @@ function setBMode(m) {
 
   function jsBifid(text) {
     // Descifrado Bífido SIN periodo — texto completo como un solo bloque.
-    
+    // Debe ser el inverso exacto de bEncrypt() que usa la misma estrategia.
+    // bEncrypt: digits=[r1,c1,r2,c2,...] → arriba=digits[0..n-1], abajo=digits[n..2n-1] → gLet(arriba[i], abajo[i])
+    // bDecrypt: cada letra cifrada da (r,c); arriba=[r0,r1,...], abajo=[c0,c1,...] → digits=[...arriba,...abajo] → gLet(digits[2i], digits[2i+1])
     const clean = text.replace(/J/g, 'I').replace(/[^A-IK-Z]/g, '');
     const arriba = [], abajo = [];
     for (const c of clean) {
@@ -1585,7 +1587,7 @@ function setBMode(m) {
         titleEl.textContent = 'Resultados — César (25 claves)';
         for (let k = 1; k <= 25; k++) {
           const dec = wasmCesar(text, k);
-          //Palabras que podrían indicar un resultado prometedor (en español, con K=1 sería "
+          // Heuristic: highlight if starts with vowel cluster or common Spanish words
           const likely = /^(HOL|MUN|SEC|DER|PRO|ETI|SEM|EST|LOS|LAS|DEL|UNA|QUE|CON)/.test(dec);
           html += `<div class="bk-result-row${likely?' highlight':''}">
             <span class="bk-key">k = ${String(k).padStart(2,'0')}</span>
