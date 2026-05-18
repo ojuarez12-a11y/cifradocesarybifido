@@ -27,16 +27,6 @@ No requiere instalación ni dependencias. Solo abre el archivo en un navegador:
 # Opción 1 — abrir directamente
 Doble clic en index.html
 
-# Opción 2 — servidor local (opcional)
-npx serve .
-# o
-python -m http.server 8080
-```
-
-Luego visita `http://localhost:8080` si usaste servidor local.
-
----
-
 ## 📂 Estructura del proyecto
 
 ```
